@@ -122,6 +122,7 @@ export default {
       this.getData(login.loginConfirm, params).then((res) => {
         if (res.success) {
           this.$Message.success({ content: 'Login Success' })
+          this.setLocal('userInfo', res.data)
           this.$router.push('/')
         } else {
           if (res.code === 1) {
