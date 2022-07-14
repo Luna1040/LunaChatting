@@ -33,18 +33,6 @@
       }"
       :corner="corner"
     ></FormItem>
-    <div
-      class="lunaFormItem"
-      :label-width-count="labelWidthCount"
-      :label-color-count="labelColorCount"
-      :class="{
-        rightLabel: labelPosition === 'left',
-        topLabel: labelPosition === 'top'
-      }"
-      :corner="corner"
-    >
-      <slot></slot>
-    </div>
   </div>
 </template>
 

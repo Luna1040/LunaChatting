@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="countTheme">
     <router-view />
   </div>
 </template>
@@ -8,7 +8,9 @@
 export default {
   name: 'app',
   data() {
-    return {}
+    return {
+      countTheme:'dayLight'
+    }
   },
   created() {
     //判断用户信息留存
@@ -34,8 +36,26 @@ export default {
       //没有留存 -> 跳转登录
       this.$router.push('/Login')
     }
+    this.checkTime();
+    //判断时间
+    setInterval(()=>{
+      this.checkTime()
+    },1800000)
+  },
+  methods:{
+    checkTime(){
+      let currentTime = parseInt(new Date().toLocaleTimeString().split(':')[0]);
+      if(currentTime > 17){
+        this.countTheme='nightEye'
+      }
+    }
   }
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+#app{
+  width: 100vw;
+  min-height: 100vh;
+}
+</style>

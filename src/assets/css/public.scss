@@ -30,7 +30,7 @@ main,
 p,
 section,
 span {
-  font-family: Menlo, Consolas, PingFang SC, Microsoft YaHei UI Light, Microsoft YaHei Light, WenQuanYi Micro Hei, San Francisco, Helvetica, Helvetica Neue, sans-serif;
+  font-family: 'Yuanti SC',Menlo, Consolas, PingFang SC, Microsoft YaHei UI Light, Microsoft YaHei Light, WenQuanYi Micro Hei, San Francisco, Helvetica, Helvetica Neue, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -56,4 +56,9 @@ a {
 .lunaGardenLoading {
   position: fixed;
   z-index: 100;
+}
+.login, .register{
+  a{
+    color: $Primary;
+  }
 }

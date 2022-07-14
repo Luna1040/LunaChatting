@@ -1,13 +1,26 @@
 <template>
-  <div>
-    <h1>Register</h1>
-    <Form ref="form" style="margin: 0 auto" background="rgba(0,0,0,0)" label-color="#000" border="0" :shadow="false" :form="form" :width="552" label-position="top" :label-width="220"></Form>
-    <Button theme="primary" @click="registerSubmit" :loading="loading">Sign Up</Button>
+  <div class="register">
+    <div class="logoArea">
+      <img src="../../assets/icons/Logo.svg" alt="">
+      <p>Powered by Luna Garden</p>
+      <p>Designed by Luna</p>
+    </div>
+    <div class="mainArea">
+      <h1>Luna Chatting</h1>
+      <span>Register</span>
+      <Form ref="form" style="margin: 0 auto" background="rgba(0,0,0,0)" label-color="#000" border="0" :shadow="false"
+            :form="form" label-position="top" :label-width="220"></Form>
+      <Button theme="primary" style="margin: 0 auto"  @click="registerSubmit" :loading="loading">Sign Up</Button>
+      <p>Already have an account?
+        <router-link to="/login">Sign in</router-link>
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
-import { login, publicApi } from '@/assets/js/Luna-GetData/url'
+import {login, publicApi} from '@/assets/js/Luna-GetData/url'
+
 export default {
   name: 'Register',
   data() {
@@ -122,7 +135,7 @@ export default {
     registerSubmit() {
       if (this.$refs.form.examine(this.registerFormData)) {
         // Error
-        this.$Message.error({ content: '请检查填写错误项！' })
+        this.$Message.error({content: '请检查填写错误项！'})
         return
       }
       this.loading = true
@@ -130,43 +143,99 @@ export default {
       params.uid = this.uuidGet()
       params.password = this.encrypt(params.password)
       this.getData(login.registerConfirm, params)
-        .then((res) => {
-          if (res.success) {
-            this.$Message.success({ content: 'Register Success!' })
-            localStorage.setItem('userInfo', JSON.stringify(res.data))
-            this.getData(publicApi.online, { _id: res.data._id, userName: res.data.userName }).then((res) => {
-              if (res.success) {
-                this.$router.push('/')
-              }
-            })
-          } else {
-            if (res.code === 1) {
-              this.$Message.error({ content: "this.$t('lang.register.alert1')" })
-            } else if (res.code === 2) {
-              this.$Message.error({ content: "this.$t('lang.register.alert2')" })
-            } else if (res.code === 3) {
-              this.$Message.error({ content: "this.$t('lang.register.alert3')" })
-            } else if (res.code === 5) {
-              this.$Message.error({ content: "this.$t('lang.register.alert5')" })
-            } else if (res.code === 6) {
-              this.$Message.error({ content: "this.$t('lang.register.alert6')" })
-            } else if (res.code === 19) {
-              this.$Message.error({ content: "this.$t('lang.register.alert19')" })
-            } else if (res.code === 20) {
-              this.$Message.error({ content: "this.$t('lang.register.alert20')" })
+          .then((res) => {
+            if (res.success) {
+              this.$Message.success({content: 'Register Success!'})
+              localStorage.setItem('userInfo', JSON.stringify(res.data))
+              this.getData(publicApi.online, {_id: res.data._id, userName: res.data.userName}).then((res) => {
+                if (res.success) {
+                  this.$router.push('/')
+                }
+              })
             } else {
-              this.$Message.error({ content: "this.$t('lang.unknownError')" })
+              if (res.code === 1) {
+                this.$Message.error({content: "this.$t('lang.register.alert1')"})
+              } else if (res.code === 2) {
+                this.$Message.error({content: "this.$t('lang.register.alert2')"})
+              } else if (res.code === 3) {
+                this.$Message.error({content: "this.$t('lang.register.alert3')"})
+              } else if (res.code === 5) {
+                this.$Message.error({content: "this.$t('lang.register.alert5')"})
+              } else if (res.code === 6) {
+                this.$Message.error({content: "this.$t('lang.register.alert6')"})
+              } else if (res.code === 19) {
+                this.$Message.error({content: "this.$t('lang.register.alert19')"})
+              } else if (res.code === 20) {
+                this.$Message.error({content: "this.$t('lang.register.alert20')"})
+              } else {
+                this.$Message.error({content: "this.$t('lang.unknownError')"})
+              }
             }
-          }
-          this.loading = false
-        })
-        .catch((err) => {
-          this.$Message.error({ content: err })
-          this.loading = false
-        })
+            this.loading = false
+          })
+          .catch((err) => {
+            this.$Message.error({content: err})
+            this.loading = false
+          })
     }
   }
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.register {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoArea {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  text-align: center;
+  z-index: -1;
+}
+
+.mainArea {
+  text-align: center;
+
+  h1 {
+    font-size: 48px;
+  }
+
+  > p {
+    font-size: 16px;
+    margin-top: 12px;
+  }
+
+  .lunaForm {
+    width: 480px !important;
+  }
+
+  .lunaButton {
+    width: 430px !important;
+  }
+}
+
+@media only screen and(max-width: 400px) {
+  .logoArea {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    text-align: center;
+    width: 100%;
+  }
+  .mainArea {
+    .lunaForm {
+      width: 300px !important;
+    }
+
+    .lunaButton {
+      width: 250px !important;
+    }
+  }
+}
+</style>

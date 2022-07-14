@@ -1,13 +1,27 @@
 <template>
-  <div>
-    <h1>Login</h1>
-    <Form ref="form" style="margin: 0 auto" background="rgba(0,0,0,0)" label-color="#000" border="0" :shadow="false" :form="form" :width="552" label-position="top" :label-width="220"></Form>
-    <Button theme="primary" :width="502" style="margin: 0 auto" @click="loginSubmit">Sign In</Button>
+  <div class="login">
+    <div class="logoArea">
+      <img src="../../assets/icons/Logo.svg" alt="">
+      <p>Powered by Luna Garden</p>
+      <p>Designed by Luna</p>
+    </div>
+    <div class="mainArea">
+      <h1>Luna Chatting</h1>
+      <span>Login</span>
+      <Form ref="form" style="margin: 0 auto;padding-bottom: 0" background="rgba(0,0,0,0)" label-color="#000" border="0"
+            :shadow="false"
+            :form="form" label-position="top" :label-width="220"></Form>
+      <Button theme="primary" :font-size="18" style="margin: 0 auto" @click="loginSubmit">Sign In</Button>
+      <p>Don’t have an account?
+        <router-link to="/register">Sign up</router-link>
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
-import { login, publicApi } from '@/assets/js/Luna-GetData/url'
+import {login, publicApi} from '@/assets/js/Luna-GetData/url'
+
 export default {
   name: 'Login',
   data() {
@@ -121,26 +135,26 @@ export default {
       params.password = this.encrypt(params.password)
       this.getData(login.loginConfirm, params).then((res) => {
         if (res.success) {
-          this.$Message.success({ content: 'Login Success' })
+          this.$Message.success({content: 'Login Success'})
           this.setLocal('userInfo', res.data)
-          this.getData(publicApi.online, { _id: res.data._id, userName: res.data.userName }).then((res) => {
+          this.getData(publicApi.online, {_id: res.data._id, userName: res.data.userName}).then((res) => {
             if (res.success) {
               this.$router.push('/')
             }
           })
         } else {
           if (res.code === 1) {
-            this.$Message.error({ content: "this.$t('lang.login.alert1')" })
+            this.$Message.error({content: "this.$t('lang.login.alert1')"})
           } else if (res.code === 2) {
-            this.$Message.error({ content: "this.$t('lang.login.alert2')" })
+            this.$Message.error({content: "this.$t('lang.login.alert2')"})
           } else if (res.code === 3) {
-            this.$Message.error({ content: "this.$t('lang.login.alert3')" })
+            this.$Message.error({content: "this.$t('lang.login.alert3')"})
           } else if (res.code === 4) {
-            this.$Message.error({ content: "this.$t('lang.login.alert4')" })
+            this.$Message.error({content: "this.$t('lang.login.alert4')"})
           } else if (res.code === 6) {
-            this.$Message.error({ content: "this.$t('lang.login.alert6')" })
+            this.$Message.error({content: "this.$t('lang.login.alert6')"})
           } else {
-            this.$Message.error({ content: "this.$t('lang.unknownError')" })
+            this.$Message.error({content: "this.$t('lang.unknownError')"})
           }
         }
       })
@@ -149,4 +163,60 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoArea {
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  text-align: center;
+  z-index: -1;
+}
+
+.mainArea {
+  text-align: center;
+
+  h1 {
+    font-size: 48px;
+  }
+
+  > p {
+    font-size: 16px;
+    margin-top: 12px;
+  }
+
+  .lunaForm {
+    width: 480px !important;
+  }
+
+  .lunaButton {
+    width: 430px !important;
+  }
+}
+
+@media only screen and(max-width: 400px) {
+  .logoArea {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    text-align: center;
+    width: 100%;
+  }
+  .mainArea {
+    .lunaForm {
+      width: 300px !important;
+    }
+
+    .lunaButton {
+      width: 250px !important;
+    }
+  }
+}
+</style>
