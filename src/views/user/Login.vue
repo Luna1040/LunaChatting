@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { login } from '@/assets/js/Luna-GetData/url'
+import { login, publicApi } from '@/assets/js/Luna-GetData/url'
 export default {
   name: 'Login',
   data() {
@@ -123,20 +123,24 @@ export default {
         if (res.success) {
           this.$Message.success({ content: 'Login Success' })
           this.setLocal('userInfo', res.data)
-          this.$router.push('/')
+          this.getData(publicApi.online, { _id: res.data._id, userName: res.data.userName }).then((res) => {
+            if (res.success) {
+              this.$router.push('/')
+            }
+          })
         } else {
           if (res.code === 1) {
-            this.$Message.error({ content: this.$t('lang.login.alert1') })
+            this.$Message.error({ content: "this.$t('lang.login.alert1')" })
           } else if (res.code === 2) {
-            this.$Message.error({ content: this.$t('lang.login.alert2') })
+            this.$Message.error({ content: "this.$t('lang.login.alert2')" })
           } else if (res.code === 3) {
-            this.$Message.error({ content: this.$t('lang.login.alert3') })
+            this.$Message.error({ content: "this.$t('lang.login.alert3')" })
           } else if (res.code === 4) {
-            this.$Message.error({ content: this.$t('lang.login.alert4') })
+            this.$Message.error({ content: "this.$t('lang.login.alert4')" })
           } else if (res.code === 6) {
-            this.$Message.error({ content: this.$t('lang.login.alert6') })
+            this.$Message.error({ content: "this.$t('lang.login.alert6')" })
           } else {
-            this.$Message.error({ content: this.$t('lang.unknownError') })
+            this.$Message.error({ content: "this.$t('lang.unknownError')" })
           }
         }
       })

@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { login } from '@/assets/js/Luna-GetData/url'
+import { login, publicApi } from '@/assets/js/Luna-GetData/url'
 export default {
   name: 'Register',
   data() {
@@ -134,24 +134,28 @@ export default {
           if (res.success) {
             this.$Message.success({ content: 'Register Success!' })
             localStorage.setItem('userInfo', JSON.stringify(res.data))
-            this.$router.push('/')
+            this.getData(publicApi.online, { _id: res.data._id, userName: res.data.userName }).then((res) => {
+              if (res.success) {
+                this.$router.push('/')
+              }
+            })
           } else {
             if (res.code === 1) {
-              this.$Message.error({ content: this.$t('lang.register.alert1') })
+              this.$Message.error({ content: "this.$t('lang.register.alert1')" })
             } else if (res.code === 2) {
-              this.$Message.error({ content: this.$t('lang.register.alert2') })
+              this.$Message.error({ content: "this.$t('lang.register.alert2')" })
             } else if (res.code === 3) {
-              this.$Message.error({ content: this.$t('lang.register.alert3') })
+              this.$Message.error({ content: "this.$t('lang.register.alert3')" })
             } else if (res.code === 5) {
-              this.$Message.error({ content: this.$t('lang.register.alert5') })
+              this.$Message.error({ content: "this.$t('lang.register.alert5')" })
             } else if (res.code === 6) {
-              this.$Message.error({ content: this.$t('lang.register.alert6') })
+              this.$Message.error({ content: "this.$t('lang.register.alert6')" })
             } else if (res.code === 19) {
-              this.$Message.error({ content: this.$t('lang.register.alert19') })
+              this.$Message.error({ content: "this.$t('lang.register.alert19')" })
             } else if (res.code === 20) {
-              this.$Message.error({ content: this.$t('lang.register.alert20') })
+              this.$Message.error({ content: "this.$t('lang.register.alert20')" })
             } else {
-              this.$Message.error({ content: this.$t('lang.unknownError') })
+              this.$Message.error({ content: "this.$t('lang.unknownError')" })
             }
           }
           this.loading = false
