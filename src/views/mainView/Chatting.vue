@@ -1,363 +1,213 @@
 <template>
   <div>
-    <h1>LunaChatting</h1>
-    <Button theme="primary" @click="sendMessage('User1')">Send User1 Message</Button>
-    <Button theme="primary" @click="sendMessage('User2')">Send User2 Message</Button>
-    <Button theme="primary" @click="sendMessage('User3')">Send User3 Message</Button>
-    <Button theme="primary" @click="sendMyMessage()">Send My Message</Button>
+    <p v-if="userInfo.collection.length !== 0">日期过滤器{{ userInfo.collection[0].AddTime | countDate }}</p>
+    <Input v-model="chatBoxData" />
+    <Button theme="primary" @click="sendMessage">发送</Button>
     <ul>
-      <li v-for="i in userList" :key="'user' + i.id" @click="changeChattingUser(i.id)">
-        {{ i.name }}
-        <span v-show="i.unread !== 0">{{ i.unread }}</span>
-      </li>
-    </ul>
-    <div class="chattingViewer">
-      <h1 v-if="currentChatListFinal.length === 0">You Have no message yet.</h1>
-      <ul>
-        <li :class="{ myself: i.myself }" v-for="(i, index) in currentChatListFinal" :key="index">{{ i.content }}</li>
-      </ul>
-    </div>
-    <p>Online user</p>
-    <ul>
-      <li v-for="i in onlineUser">{{ i.name }}</li>
+      <li @click="currentChattingUser = i.id" v-for="i in currentOnlineUser" :class="{ active: currentChattingUser === i.id }">{{ i.userName }}</li>
     </ul>
   </div>
 </template>
 
 <script>
-!(function () {
-  // 添加事件监听
-  document.addEventListener('visibilitychange', function () {
-    let pageVisibility = document.visibilityState
-    // 页面变为不可见时触发
-    if (pageVisibility == 'hidden') {
-      document.title = '主人，你去哪儿了？'
-    }
-    // 页面变为可见时触发
-    if (pageVisibility == 'visible') {
-      console.log(this.userInfo)
-      document.title = '主人，你终于回来了？'
-    }
-  })
-})()
-
 import { chat, publicApi } from '../../assets/js/Luna-GetData/url'
-const ws = new WebSocket('ws://localhost:3001')
+
+const ws = new WebSocket('ws://192.168.0.100:3001')
 
 export default {
   name: 'Chatting',
   data() {
     return {
-      userInfo: {},
-      onlineUser: [],
-      userList: [
-        { name: 'User1', id: 'User1', unread: 0 },
-        { name: 'User2', id: 'User2', unread: 0 },
-        { name: 'User3', id: 'User3', unread: 0 }
-      ],
-      currentChatList: {
-        User1_62c3c28873784d62c4f10a44: [
+      chatBoxData: '',
+      userInfo: {
+        id: 111,
+        userName: 'Emify',
+        userIcon: 'http://192.168.0.100:3000/res/userIcons/userIcon.jpg',
+        userSign: 'Life is Strange',
+        customSetting: {
+          inkMode: true,
+          targetChatColor: '#ff9200',
+          targetChatFontColor: '#ffffff',
+          myChatColor: '#EB7290',
+          myChatFontColor: '#FFFFFF',
+          chattingBackgroundColor: '#FFFFFF',
+          fontsize: '16px',
+          alertMusic: 'http://192.168.0.100:3000/audio/Diamond.wav'
+        },
+        collection: [
           {
-            type: 'text',
-            content: 'I love Luna Garden so much1',
-            unread: true,
-            timeStamp: 1657106528519
+            type: 'image',
+            content: 'http://192.168.0.100:3000/res/userIcons/2.PoliceDetail.jpg',
+            AddTime: 1472048779952,
+            from: '222'
           },
           {
             type: 'text',
-            content: 'I love Luna Garden so much2',
-            unread: false,
-            timeStamp: 1657106528530
+            content: '123456',
+            AddTime: 1472048788952,
+            from: '222'
           },
           {
-            type: 'text',
-            content: 'I love Luna Garden so much3',
-            unread: false,
-            timeStamp: 1657106528531
+            type: 'audio',
+            content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+            AddTime: 1472048798952,
+            from: '222'
           },
           {
-            type: 'text',
-            content: 'I love Luna Garden so much4',
-            unread: true,
-            timeStamp: 1657106528542
+            type: 'video',
+            content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+            AddTime: 1472048808952,
+            from: '222'
           },
           {
-            type: 'text',
-            content: 'I love Luna1',
-            myself: true,
-            timeStamp: 1657106528519
-          },
-          {
-            type: 'text',
-            content: 'I love Luna2',
-            myself: true,
-            timeStamp: 1657106528520
-          },
-          {
-            type: 'text',
-            content: 'I love Luna3',
-            myself: true,
-            timeStamp: 1657106528531
-          },
-          {
-            type: 'text',
-            content: 'I love Luna4',
-            myself: true,
-            timeStamp: 1657106528532
-          }
-        ],
-        User2_62c3c28873784d62c4f10a44: [
-          {
-            type: 'text',
-            content: 'User2 I love Luna Garden so much1',
-            unread: false,
-            timeStamp: 1657106528519
-          },
-          {
-            type: 'text',
-            content: 'User2 I love Luna Garden so much2',
-            unread: false,
-            timeStamp: 1657106528530
-          },
-          {
-            type: 'text',
-            content: 'User2 I love Luna Garden so much3',
-            unread: false,
-            timeStamp: 1657106528531
-          },
-          {
-            type: 'text',
-            content: 'User2 I love Luna Garden so much4',
-            unread: true,
-            timeStamp: 1657106528542
-          },
-          {
-            type: 'text',
-            content: 'I love Luna1 User2',
-            myself: true,
-            timeStamp: 1657106528519
-          },
-          {
-            type: 'text',
-            content: 'I love Luna2 User2',
-            myself: true,
-            timeStamp: 1657106528520
-          },
-          {
-            type: 'text',
-            content: 'I love Luna3 User2',
-            myself: true,
-            timeStamp: 1657106528531
-          },
-          {
-            type: 'text',
-            content: 'I love Luna4 User2',
-            myself: true,
-            timeStamp: 1657106528532
-          }
-        ],
-        User3_62c3c28873784d62c4f10a44: [
-          {
-            type: 'text',
-            content: 'User3 I love Luna Garden so much1',
-            unread: false,
-            timeStamp: 1657106528519
-          },
-          {
-            type: 'text',
-            content: 'User3 I love Luna Garden so much2',
-            unread: false,
-            timeStamp: 1657106528530
-          },
-          {
-            type: 'text',
-            content: 'User3 I love Luna Garden so much3',
-            unread: false,
-            timeStamp: 1657106528531
-          },
-          {
-            type: 'text',
-            content: 'User3 I love Luna Garden so much4',
-            unread: true,
-            timeStamp: 1657106528542
-          },
-          {
-            type: 'text',
-            content: 'I love Luna1 User3',
-            myself: true,
-            timeStamp: 1657106528519
-          },
-          {
-            type: 'text',
-            content: 'I love Luna2 User3',
-            myself: true,
-            timeStamp: 1657106528520
-          },
-          {
-            type: 'text',
-            content: 'I love Luna3 User3',
-            myself: true,
-            timeStamp: 1657106528531
-          },
-          {
-            type: 'text',
-            content: 'I love Luna4 User3',
-            myself: true,
-            timeStamp: 1657106528532
+            type: 'file',
+            content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+            AddTime: 1472048808952,
+            from: '222'
           }
         ]
       },
-      currentChatListFinal: [],
+      chatListAll: [
+        {
+          id: '111_222',
+          chatList: [
+            {
+              id: '111',
+              type: 'text',
+              content: '第一句话',
+              timeStamp: 1472048808952
+            },
+            {
+              id: '222',
+              type: 'text',
+              content: '我的第一句话',
+              timeStamp: 1472049808952
+            },
+            {
+              id: '111',
+              type: 'image',
+              content: 'http://192.168.0.100:3000/res/userIcons/userIcon.jpg',
+              timeStamp: 1472058808952
+            },
+            {
+              id: '111',
+              type: 'audio',
+              content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+              timeStamp: 1472059808952
+            },
+            {
+              id: '111',
+              type: 'video',
+              content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+              timeStamp: 1472060808952
+            },
+            {
+              id: '111',
+              type: 'file',
+              content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+              timeStamp: 1472061808952
+            }
+          ]
+        },
+        {
+          id: '222_333',
+          chatList: [
+            {
+              id: '333',
+              type: 'text',
+              content: '第一句话',
+              timeStamp: 1472048808952
+            },
+            {
+              id: '222',
+              type: 'text',
+              content: '我的第一句话',
+              timeStamp: 1472049808952
+            },
+            {
+              id: '222',
+              type: 'image',
+              content: 'http://192.168.0.100:3000/res/userIcons/userIcon.jpg',
+              timeStamp: 1472058808952
+            },
+            {
+              id: '111',
+              type: 'audio',
+              content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+              timeStamp: 1472059808952
+            },
+            {
+              id: '111',
+              type: 'video',
+              content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+              timeStamp: 1472060808952
+            },
+            {
+              id: '111',
+              type: 'file',
+              content: 'http://192.168.0.100:3000/audio/Diamond.wav',
+              timeStamp: 1472061808952
+            }
+          ]
+        }
+      ],
+      currentOnlineUser: [
+        {
+          id: '111',
+          userName: 'Luna',
+          userIcon: 'https://v.api.aa1.cn/api/api-tx/index.php?wpon=aosijur75fi5huyty5f'
+        },
+        {
+          id: '222',
+          userName: 'Emify',
+          userIcon: 'https://v.api.aa1.cn/api/api-tx/index.php?wpon=aosijur75fi5huyty5f'
+        },
+        {
+          id: '333',
+          userName: '花神',
+          userIcon: 'https://v.api.aa1.cn/api/api-tx/index.php?wpon=aosijur75fi5huyty5f'
+        },
+        {
+          id: '444',
+          userName: '依芈',
+          userIcon: 'https://v.api.aa1.cn/api/api-tx/index.php?wpon=aosijur75fi5huyty5f'
+        }
+      ],
       currentChattingUser: ''
     }
   },
   created() {
     this.userInfo = this.getLocal('userInfo')
-    this.currentChattingUser = this.userList[0].id
-    this.changeChattingUser(this.currentChattingUser)
-  },
-  mounted() {
-    if (window.Notification) {
-      // 支持
-      this.isAllowNotify()
-    } else {
-      this.$Message.error({ content: 'Your browser is not support desktop notification, you cannot receive the new message alert.' })
-    }
+    this.getCurrentOnlineUser()
     this.initWebSocket()
+    // this.getAllChatList()
   },
-  watch: {
-    testFocus() {
-      let pageVisibility = document.visibilityState
-      if (pageVisibility === 'hidden') {
-        this.getData(publicApi.offline, { _id: this.userInfo._id, userName: this.userInfo.userName }).then((res) => {
-          res.currentOnlineUser = []
-          if (res.success) {
-            this.onlineUser = res.data.currentOnlineUser
-          }
-        })
-      }
-      // 页面变为可见时触发
-      if (pageVisibility === 'visible') {
-        this.getData(publicApi.online, { _id: this.userInfo._id, userName: this.userInfo.userName }).then((res) => {
-          res.currentOnlineUser = []
-          if (res.success) {
-            this.onlineUser = res.data.currentOnlineUser
-          }
-        })
-      }
+  filters: {
+    countDate(value) {
+      let time = new Date(value)
+      let str = time.toLocaleDateString().replace(/\//g, '-') + ' ' + time.toTimeString().substr(0, 8)
+      return str
     }
   },
   methods: {
-    changeChattingUser(id) {
-      if (this.currentChatList[id + '_' + this.userInfo._id] !== undefined) {
-        this.currentChatListFinal = this.currentChatList[id + '_' + this.userInfo._id].sort(function (a, b) {
-          return a.timeStamp - b.timeStamp
-        })
-        this.currentChattingUser = id
-        this.countUnread()
-        this.clearCurrentUnread(id)
-      }
+    //Alert Music(Reading User Custom Profile)
+    playAlertSound() {
+      new Audio(this.userInfo.customSetting.alertMusic).play()
     },
-    sendMessage(id) {
-      const newId = id + '_' + this.userInfo._id
-      let msg = {
-        id: newId,
-        type: 'text',
-        content: 'New Message from' + id + 'I love Luna Garden so much1',
-        unread: true,
-        timeStamp: Date.now()
-      }
-      this.getData(chat.sendMessage, msg).then((res) => {
+    //Get Online User
+    getCurrentOnlineUser() {
+      this.getData(publicApi.online, {
+        id: this.userInfo.id,
+        userName: this.userInfo.userName,
+        userIcon: 'https://v.api.aa1.cn/api/api-tx/index.php?wpon=aosijur75fi5huyty5f',
+        userSign: 'userSign'
+      }).then((res) => {
         if (res.success) {
-          if (this.currentChatList[newId]) {
-            if (id === this.currentChattingUser) {
-              //当前用户为活跃用户
-              msg.unread = false
-            } else {
-              this.sendNotification(msg)
-            }
-            this.currentChatList[newId].push(msg)
-            this.countUnread()
-          } else {
-            this.currentChatList[newId] = []
-            this.currentChatList[newId].push(msg)
-          }
+          this.currentOnlineUser = res.data.currentOnlineUser
         }
       })
     },
-    sendMyMessage() {
-      let msg = {
-        id: this.currentChattingUser + '_' + this.userInfo._id,
-        type: 'text',
-        myself: true,
-        content: 'New Message from' + this.userInfo._id + 'I love Luna Garden so much1',
-        timeStamp: Date.now()
-      }
-      this.getData(chat.sendMessage, msg).then((res) => {
-        if (res.success) {
-          this.currentChatListFinal.push(msg)
-        } else {
-          this.$Message.success({ content: 'Unknow error, please refresh the page or contact the administrator' })
-        }
-      })
-    },
-    countUnread() {
-      for (let i = 0; i < this.userList.length; i++) {
-        if (this.userList[i].id !== this.currentChattingUser) {
-          let count = 0
-          for (let a = 0; a < this.currentChatList[this.userList[i].id + '_' + this.userInfo._id].length; a++) {
-            if (this.currentChatList[this.userList[i].id + '_' + this.userInfo._id][a].unread) {
-              count++
-              this.userList[i].unread = count
-            }
-          }
-        }
-      }
-    },
-    clearCurrentUnread(id) {
-      for (let i = 0; i < this.userList.length; i++) {
-        if (this.userList[i].id === id) {
-          this.userList[i].unread = 0
-        }
-      }
-      for (let i = 0; i < this.currentChatList[id + '_' + this.userInfo._id].length; i++) {
-        this.currentChatList[id + '_' + this.userInfo._id][i].unread = false
-      }
-    },
-    //桌面通知模块
-    isAllowNotify() {
-      if (window.Notification && Notification.permission !== 'denied') {
-        Notification.requestPermission(function (status) {
-          //若status非granted，则为拒绝通知，保存至线上用户信息，同时更新vueX状态
-          if (status === 'granted') {
-          } else {
-            this.$Message.error({ content: 'You have block the desktop notification, you cannot receive the new message alert.' })
-          }
-        })
-      }
-    },
-    sendNotification(data) {
-      //若有新消息，则向桌面发送通知
-      const notify = new Notification('New message from Luna Chatting', {
-        body: data.content,
-        lang: 'en-US',
-        icon: 'http://localhost:3000/res/userIcons/userIcon.jpg'
-      })
-      notify.onshow = function () {
-        // 通知已经发送至桌面
-      }
-      notify.onclick = function () {
-        // 点击了通知
-      }
-      notify.onerror = function () {
-        // 手动关闭
-        notify.close()
-      }
-      notify.onclose = function () {
-        // console.log('close')
-      }
-    },
-    //WebSocket模块
+    //WebSocket Module
     initWebSocket() {
       if (window.WebSocket) {
         ws.onopen = function (e) {
@@ -370,16 +220,38 @@ export default {
           console.log('连接出错')
         }
         // 接收服务器的消息
-        ws.onmessage = function (e) {
+        ws.onmessage = (e) => {
           let data = JSON.parse(e.data)
           if (data.WSType === 'message') {
           } else if (data.WSType === 'onlineUser') {
+            this.currentOnlineUser = data.currentOnlineUser
           }
-          // let data = JSON.parse(e)
-          // let message = 'message:' + e.content + ''
-          // console.log(message)
         }
       }
+    },
+    getAllChatList() {
+      let params = {
+        id: this.userInfo.id
+      }
+      this.getData(chat.getAllMessage, params)
+    },
+    countMyContacts() {},
+    sendMessage() {
+      let msg = {
+        chatId: this.currentChattingUser,
+        id: this.userInfo.id,
+        type: 'text',
+        myself: true,
+        content: this.chatBoxData,
+        timeStamp: Date.now()
+      }
+      this.getData(chat.sendMessage, msg).then((res) => {
+        if (res.success) {
+          this.currentChatListFinal.push(msg)
+        } else {
+          this.$Message.success({ content: 'Unknow error, please refresh the page or contact the administrator' })
+        }
+      })
     }
   }
 }
@@ -387,6 +259,9 @@ export default {
 
 <style scoped>
 .myself {
+  background: red;
+}
+.active {
   background: red;
 }
 </style>

@@ -20,7 +20,8 @@ export const login = {
   resetConfirm: 'user/reset' // Post
 }
 export const chat = {
-  sendMessage: 'chat/sendMessage' // Post
+  sendMessage: 'chat/sendMessage', // Post
+  getAllMessage: 'chat/getAllMessage'
 }
 export const userInfo = {
   userInfoModified: 'user/userInfoModified', // Post

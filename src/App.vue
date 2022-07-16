@@ -9,14 +9,14 @@ export default {
   name: 'app',
   data() {
     return {
-      countTheme:'dayLight'
+      countTheme: 'dayLight'
     }
   },
   created() {
     //判断用户信息留存
     if (this.getLocal('userInfo') !== null) {
       // 若用户信息内有用户id
-      if (this.getLocal('userInfo').uid) {
+      if (this.getLocal('userInfo').id) {
         //有 -> 获取设置&获取菜单 -> publicReq.js
         //若LocalStorage中储存的用户信息已超时，跳转登录页
         if (Date.now - 86400000 > this.getLocal('userInfo').timeStamp) {
@@ -36,17 +36,17 @@ export default {
       //没有留存 -> 跳转登录
       this.$router.push('/Login')
     }
-    this.checkTime();
+    this.checkTime()
     //判断时间
-    setInterval(()=>{
+    setInterval(() => {
       this.checkTime()
-    },1800000)
+    }, 1800000)
   },
-  methods:{
-    checkTime(){
-      let currentTime = parseInt(new Date().toLocaleTimeString().split(':')[0]);
-      if(currentTime > 17){
-        this.countTheme='nightEye'
+  methods: {
+    checkTime() {
+      let currentTime = parseInt(new Date().toLocaleTimeString().split(':')[0])
+      if (currentTime > 17) {
+        this.countTheme = 'nightEye'
       }
     }
   }
@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style lang="scss">
-#app{
+#app {
   width: 100vw;
   min-height: 100vh;
 }

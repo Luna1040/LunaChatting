@@ -1,18 +1,17 @@
 <template>
   <div class="login">
     <div class="logoArea">
-      <img src="../../assets/icons/Logo.svg" alt="">
+      <img src="../../assets/icons/Logo.svg" alt="" />
       <p>Powered by Luna Garden</p>
       <p>Designed by Luna</p>
     </div>
     <div class="mainArea">
       <h1>Luna Chatting</h1>
       <span>Login</span>
-      <Form ref="form" style="margin: 0 auto;padding-bottom: 0" background="rgba(0,0,0,0)" label-color="#000" border="0"
-            :shadow="false"
-            :form="form" label-position="top" :label-width="220"></Form>
+      <Form ref="form" style="margin: 0 auto; padding-bottom: 0" background="rgba(0,0,0,0)" label-color="#000" border="0" :shadow="false" :form="form" label-position="top" :label-width="220"></Form>
       <Button theme="primary" :font-size="18" style="margin: 0 auto" @click="loginSubmit">Sign In</Button>
-      <p>Don’t have an account?
+      <p>
+        Don’t have an account?
         <router-link to="/register">Sign up</router-link>
       </p>
     </div>
@@ -20,7 +19,7 @@
 </template>
 
 <script>
-import {login, publicApi} from '@/assets/js/Luna-GetData/url'
+import { login, publicApi } from '@/assets/js/Luna-GetData/url'
 
 export default {
   name: 'Login',
@@ -111,7 +110,6 @@ export default {
             },
             on: {
               input: (event) => {
-                console.log(event)
                 this.loginFormData.password = event
               },
               'keyup.enter': (event) => {
@@ -135,26 +133,27 @@ export default {
       params.password = this.encrypt(params.password)
       this.getData(login.loginConfirm, params).then((res) => {
         if (res.success) {
-          this.$Message.success({content: 'Login Success'})
+          res.data.timeStamp = new Date().getTime()
+          this.$Message.success({ content: 'Login Success' })
           this.setLocal('userInfo', res.data)
-          this.getData(publicApi.online, {_id: res.data._id, userName: res.data.userName}).then((res) => {
+          this.getData(publicApi.online, { id: res.data.id, userName: res.data.userName, userIcon: 'https://v.api.aa1.cn/api/api-tx/index.php?wpon=aosijur75fi5huyty5f', userSign: 'userSign' }).then((res) => {
             if (res.success) {
               this.$router.push('/')
             }
           })
         } else {
           if (res.code === 1) {
-            this.$Message.error({content: "this.$t('lang.login.alert1')"})
+            this.$Message.error({ content: "this.$t('lang.login.alert1')" })
           } else if (res.code === 2) {
-            this.$Message.error({content: "this.$t('lang.login.alert2')"})
+            this.$Message.error({ content: "this.$t('lang.login.alert2')" })
           } else if (res.code === 3) {
-            this.$Message.error({content: "this.$t('lang.login.alert3')"})
+            this.$Message.error({ content: "this.$t('lang.login.alert3')" })
           } else if (res.code === 4) {
-            this.$Message.error({content: "this.$t('lang.login.alert4')"})
+            this.$Message.error({ content: "this.$t('lang.login.alert4')" })
           } else if (res.code === 6) {
-            this.$Message.error({content: "this.$t('lang.login.alert6')"})
+            this.$Message.error({ content: "this.$t('lang.login.alert6')" })
           } else {
-            this.$Message.error({content: "this.$t('lang.unknownError')"})
+            this.$Message.error({ content: "this.$t('lang.unknownError')" })
           }
         }
       })
